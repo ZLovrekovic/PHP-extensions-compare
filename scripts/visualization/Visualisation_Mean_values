@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Rezultati performansi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #f9f9f9;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background: white;
+            margin-bottom: 40px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background: #eee;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        canvas#chart {
+            width: 100% !important;
+            height: 400px !important;
+            display: block;
+        }
+        #sadrzaj-za-sliku {
+            background: white;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Rezultati performansi</h1>
+
+<?php
+$data = [];
+if (($handle = fopen("rezultat.csv", "r")) !== false) {
+    $header = fgetcsv($handle);
+    $header[0] = preg_replace('/^\xEF\xBB\xBF/', '', $header[0]); // uklanja BOM
+    $header = array_map('trim', $header); // uklanja suvišne razmake
+
+    while (($row = fgetcsv($handle)) !== false) {
+        $data[] = array_combine($header, $row);
+    }
+    fclose($handle);
+}
+
+if (count($data) > 0): ?>
+
+<!-- ✅ Ovo ćemo screenshoot-ovati -->
+<div id="sadrzaj-za-sliku">
+    <table>
+        <thead>
+            <tr>
+                <?php foreach ($header as $col): ?>
+                    <th><?= htmlspecialchars($col) ?></th>
+                <?php endforeach; ?>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($data as $row): ?>
+                <tr>
+                    <?php foreach ($row as $cell): ?>
+                        <td><?= htmlspecialchars($cell) ?></td>
+                    <?php endforeach; ?>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+
+    <canvas id="chart"></canvas>
+</div>
+
+<!-- Dugme za preuzimanje slike -->
+<button onclick="preuzmiSliku()">Preuzmi tabelu i grafikon kao PNG</button>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- html2canvas -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<script>
+    const labels = <?= json_encode(array_column($data, "method")) ?>;
+    const timeData = <?= json_encode(array_map("floatval", array_column($data, "time_ms"))) ?>;
+    const memoryPeakData = <?= json_encode(array_map("floatval", array_column($data, "memory_peak_kb"))) ?>;
+    const ctx = document.getElementById('chart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Vreme izvršavanja (ms)',
+                    data: timeData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)'
+                },
+                {
+                    label: 'Peak memorija (KB)',
+                    data: memoryPeakData,
+                    backgroundColor: 'rgba(255, 0, 0, 0.8)',
+                    hoverBackgroundColor: 'rgba(255, 0, 0, 1)'
+                },
+           ]
+        },
+options: {
+    responsive: true,
+    maintainAspectRatio: false,
+	interaction: { 	mode: 'index', 
+					intersect: false 
+	},
+    scales: {
+        y: {
+            beginAtZero: true,
+            title: {
+                display: true,
+                text: 'Vrednosti'
+            }
+        }
+    },
+    plugins: {
+        title: {
+            display: true,
+            text: 'Uporedna analiza performansi metoda pristupa bazi (ClassicModels)'
+        },
+        tooltip: {
+            callbacks: {
+                label: function(context) {
+                    let label = context.dataset.label || '';
+                    let value = context.parsed.y !== null ? context.parsed.y : '';
+                    if (label === 'Vreme izvršavanja (ms)') {
+                        return `${label}: ${value} ms`;
+                    } 
+                    if (label === 'Peak memorija (MB)') {
+                        return `${label}: ${value} MB`;
+                    } 
+ 
+                    return `${label}: ${value}`;
+                }
+            }
+        }
+    }
+}
+
+    });
+
+    function preuzmiSliku() {
+        const element = document.getElementById('sadrzaj-za-sliku');
+        html2canvas(element, {
+            scale: 2, // viša rezolucija
+            useCORS: true
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'tabela-i-grafikon.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    }
+</script>
+
+<?php else: ?>
+    <p>Nema dostupnih podataka. Pokreni skriptu za merenje performansi prvo.</p>
+<?php endif; ?>
+
+</body>
+</html>
