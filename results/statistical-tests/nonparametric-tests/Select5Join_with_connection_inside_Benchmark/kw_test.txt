@@ -1,0 +1,2 @@
+[Execution_time] Kruskal-Wallis H = 149.5773, p = 0.000000
+[Memory_usage] Kruskal-Wallis H = 451.2599, p = 0.000000

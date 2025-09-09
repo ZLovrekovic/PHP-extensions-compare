@@ -1,0 +1,13 @@
+Metoda, Tip podatka, Shapiro-Wilk p-vrednost, D'Agostino p-vrednost
+mysqli_object_static, time_ms, 0.000000, 0.000000
+mysqli_object_static, memory_peak_kb, 0.000000, 0.000000
+mysqli_prepared_static, time_ms, 0.000000, 0.000000
+mysqli_prepared_static, memory_peak_kb, 0.000000, 0.000000
+mysqli_procedural_static, time_ms, 0.000000, 0.000000
+mysqli_procedural_static, memory_peak_kb, 0.000000, 0.000000
+pdo_prepared_static_e, time_ms, 0.000000, 0.000000
+pdo_prepared_static_e, memory_peak_kb, 0.000000, 0.000000
+pdo_prepared_static_n, time_ms, 0.000000, 0.000000
+pdo_prepared_static_n, memory_peak_kb, 0.000000, 0.000000
+pdo_query_static, time_ms, 0.000000, 0.000000
+pdo_query_static, memory_peak_kb, 0.000000, 0.000000

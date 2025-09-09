@@ -1,0 +1,2 @@
+[Vreme izvršavanja] Kruskal-Wallis H = 222.6733, p = 0.000000
+[Zauzeće memorije] Kruskal-Wallis H = 912.4245, p = 0.000000
