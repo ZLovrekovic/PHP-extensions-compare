@@ -1,0 +1,7 @@
+﻿method,time_ms,memory_peak_kb
+mysqli_procedural_static,95.87,1889.445
+mysqli_object_static,96.556,1898.478
+mysqli_prepared_static,97.983,1872.559
+pdo_query_static,98.162,1899.201
+pdo_prepared_static_n,101.003,1872.538
+pdo_prepared_static_e,99.76,1898.305
